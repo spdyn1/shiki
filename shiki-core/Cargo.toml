@@ -29,6 +29,8 @@ pulldown-cmark.workspace = true
 # default-on upstream, but disabled at the workspace-dependency level — see
 # root `Cargo.toml`) gate anything it actually uses.
 comrak.workspace = true
+# `bible::LocalBible` reads the verses straight out of the NWT EPUB.
+zip.workspace = true
 age.workspace = true
 getrandom.workspace = true
 sha2.workspace = true

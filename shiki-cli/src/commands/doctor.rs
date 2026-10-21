@@ -463,6 +463,8 @@ fn check_keybinding_health(config: &Config, r: &mut Report) {
                 ("publish", kb.global.publish.as_str()),
                 ("export", kb.global.export.as_str()),
                 ("zen_mode", kb.global.zen_mode.as_str()),
+                ("bible_study_notes", kb.global.bible_study_notes.as_str()),
+                ("bible_language", kb.global.bible_language.as_str()),
             ],
         ),
         (

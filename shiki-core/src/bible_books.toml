@@ -1,0 +1,285 @@
+# Livres de la Bible reconnus par shiki dans les notes ([bible] dans config.toml).
+#
+# Un bloc [[livre]] par livre, dans l'ordre canonique : le 1er est Genèse,
+# le 66e Révélation. Ne pas en retirer ni en changer l'ordre — le numéro
+# du livre (son rang ici) sert à retrouver le texte.
+#
+#   nom          nom affiché dans les citations (« Jean 3:16 ») ; il est
+#                aussi toujours reconnu dans les notes.
+#   citation     (facultatif) nom à afficher à la place de `nom`,
+#                ex. « Psaume 83:18 » plutôt que « Psaumes 83:18 ».
+#   abreviations autres formes reconnues dans les notes.
+#
+# À la comparaison, majuscules, accents, espaces et points sont ignorés :
+# « Ré », « re » et « RÉ. » sont la même abréviation. Dans une note, une
+# référence doit quand même commencer par une majuscule (« Le 19:18 » est
+# le Lévitique, « le 8:15 » une heure). Une abréviation ne peut désigner
+# qu'un seul livre.
+#
+# Les changements sont pris en compte au prochain lancement de shiki.
+
+
+[[livre]]
+nom = "Genèse"
+abreviations = ["Ge", "Gn", "Gen"]
+
+[[livre]]
+nom = "Exode"
+abreviations = ["Ex", "Exo"]
+
+[[livre]]
+nom = "Lévitique"
+abreviations = ["Le", "Lv", "Lev"]
+
+[[livre]]
+nom = "Nombres"
+abreviations = ["Nb", "Nom"]
+
+[[livre]]
+nom = "Deutéronome"
+abreviations = ["Dt", "Deut"]
+
+[[livre]]
+nom = "Josué"
+abreviations = ["Jos"]
+
+[[livre]]
+nom = "Juges"
+abreviations = ["Jg", "Jug"]
+
+[[livre]]
+nom = "Ruth"
+abreviations = ["Ru", "Rt"]
+
+[[livre]]
+nom = "1 Samuel"
+abreviations = ["1S", "1Sa"]
+
+[[livre]]
+nom = "2 Samuel"
+abreviations = ["2S", "2Sa"]
+
+[[livre]]
+nom = "1 Rois"
+abreviations = ["1R"]
+
+[[livre]]
+nom = "2 Rois"
+abreviations = ["2R"]
+
+[[livre]]
+nom = "1 Chroniques"
+abreviations = ["1Ch"]
+
+[[livre]]
+nom = "2 Chroniques"
+abreviations = ["2Ch"]
+
+[[livre]]
+nom = "Esdras"
+abreviations = ["Esd"]
+
+[[livre]]
+nom = "Néhémie"
+abreviations = ["Né", "Néh"]
+
+[[livre]]
+nom = "Esther"
+abreviations = ["Est", "Esth"]
+
+[[livre]]
+nom = "Job"
+abreviations = ["Jb"]
+
+[[livre]]
+nom = "Psaumes"
+citation = "Psaume"
+abreviations = ["Ps", "Psaume"]
+
+[[livre]]
+nom = "Proverbes"
+abreviations = ["Pr", "Pro", "Prov"]
+
+[[livre]]
+nom = "Ecclésiaste"
+abreviations = ["Ec", "Eccl", "Qo", "Qohélet"]
+
+[[livre]]
+nom = "Chant de Salomon"
+abreviations = ["Ct", "Cantique", "Chant"]
+
+[[livre]]
+nom = "Isaïe"
+abreviations = ["Is", "És", "Ésaïe"]
+
+[[livre]]
+nom = "Jérémie"
+abreviations = ["Jr", "Jer"]
+
+[[livre]]
+nom = "Lamentations"
+abreviations = ["Lm", "Lam"]
+
+[[livre]]
+nom = "Ézéchiel"
+abreviations = ["Éz", "Ézé", "Ézéch"]
+
+[[livre]]
+nom = "Daniel"
+abreviations = ["Dn", "Da", "Dan"]
+
+[[livre]]
+nom = "Osée"
+abreviations = ["Os"]
+
+[[livre]]
+nom = "Joël"
+abreviations = ["Joë", "Jl"]
+
+[[livre]]
+nom = "Amos"
+abreviations = ["Am"]
+
+[[livre]]
+nom = "Abdias"
+abreviations = ["Ab", "Abd"]
+
+[[livre]]
+nom = "Jonas"
+abreviations = ["Jon"]
+
+[[livre]]
+nom = "Michée"
+abreviations = ["Mi", "Mic"]
+
+[[livre]]
+nom = "Nahum"
+abreviations = ["Na"]
+
+[[livre]]
+nom = "Habacuc"
+abreviations = ["Ha", "Hab"]
+
+[[livre]]
+nom = "Sophonie"
+abreviations = ["So", "Soph"]
+
+[[livre]]
+nom = "Aggée"
+abreviations = ["Ag", "Agg"]
+
+[[livre]]
+nom = "Zacharie"
+abreviations = ["Za", "Zac", "Zach"]
+
+[[livre]]
+nom = "Malachie"
+abreviations = ["Ml", "Mal"]
+
+[[livre]]
+nom = "Matthieu"
+abreviations = ["Mt", "Mat", "Matt"]
+
+[[livre]]
+nom = "Marc"
+abreviations = ["Mc", "Mr"]
+
+[[livre]]
+nom = "Luc"
+abreviations = ["Lc", "Lu"]
+
+[[livre]]
+nom = "Jean"
+abreviations = ["Jn"]
+
+[[livre]]
+nom = "Actes"
+abreviations = ["Ac", "Act"]
+
+[[livre]]
+nom = "Romains"
+abreviations = ["Rm", "Ro", "Rom"]
+
+[[livre]]
+nom = "1 Corinthiens"
+abreviations = ["1Co"]
+
+[[livre]]
+nom = "2 Corinthiens"
+abreviations = ["2Co"]
+
+[[livre]]
+nom = "Galates"
+abreviations = ["Ga", "Gal"]
+
+[[livre]]
+nom = "Éphésiens"
+abreviations = ["Ép", "Éph"]
+
+[[livre]]
+nom = "Philippiens"
+abreviations = ["Ph", "Phil", "Php"]
+
+[[livre]]
+nom = "Colossiens"
+abreviations = ["Col"]
+
+[[livre]]
+nom = "1 Thessaloniciens"
+abreviations = ["1Th"]
+
+[[livre]]
+nom = "2 Thessaloniciens"
+abreviations = ["2Th"]
+
+[[livre]]
+nom = "1 Timothée"
+abreviations = ["1Tm"]
+
+[[livre]]
+nom = "2 Timothée"
+abreviations = ["2Tm"]
+
+[[livre]]
+nom = "Tite"
+abreviations = ["Tt", "Tit"]
+
+[[livre]]
+nom = "Philémon"
+abreviations = ["Phm", "Phlm"]
+
+[[livre]]
+nom = "Hébreux"
+abreviations = ["Hé", "Héb"]
+
+[[livre]]
+nom = "Jacques"
+abreviations = ["Jc", "Jq", "Jac"]
+
+[[livre]]
+nom = "1 Pierre"
+abreviations = ["1P"]
+
+[[livre]]
+nom = "2 Pierre"
+abreviations = ["2P"]
+
+[[livre]]
+nom = "1 Jean"
+abreviations = ["1Jn"]
+
+[[livre]]
+nom = "2 Jean"
+abreviations = ["2Jn"]
+
+[[livre]]
+nom = "3 Jean"
+abreviations = ["3Jn"]
+
+[[livre]]
+nom = "Jude"
+abreviations = ["Jud"]
+
+[[livre]]
+nom = "Révélation"
+abreviations = ["Ré", "Rv", "Rev", "Ap", "Apo", "Apoc", "Apocalypse"]

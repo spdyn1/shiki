@@ -1,5 +1,6 @@
 pub mod app;
 pub(crate) mod attachments;
+pub(crate) mod bible;
 pub mod capture;
 pub mod clipboard;
 pub mod confirm;

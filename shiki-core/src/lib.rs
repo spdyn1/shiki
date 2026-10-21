@@ -32,6 +32,7 @@
 
 pub mod agent_connect;
 pub mod attachments;
+pub mod bible;
 pub mod browser;
 pub mod capture;
 pub mod clock;
@@ -149,6 +150,10 @@ pub enum Error {
     /// client/scope combination.
     #[error("{0}")]
     AgentConnect(String),
+    /// A `bible::` failure — unreadable EPUB, `curl` missing or failing,
+    /// or an unexpected response from jw.org.
+    #[error("bible: {0}")]
+    Bible(String),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

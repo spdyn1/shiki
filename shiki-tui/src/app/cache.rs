@@ -24,6 +24,10 @@ pub(crate) struct NotePreviewCache {
     pub(crate) lines: Vec<Line<'static>>,
     pub(crate) sources: Vec<Option<usize>>,
     pub(crate) summary_blocks: HashMap<usize, usize>,
+    /// When PREVIEW rendered more than the note itself (`[bible]` quotes or
+    /// study notes), the note line each rendered source line comes from —
+    /// `sources` index the rendered text, this maps back for editing.
+    pub(crate) body_lines: Option<Vec<usize>>,
 }
 
 impl NotePreviewCache {
@@ -44,6 +48,7 @@ impl NotePreviewCache {
             lines,
             sources,
             summary_blocks,
+            body_lines: None,
         }
     }
 

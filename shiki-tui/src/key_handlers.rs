@@ -4195,7 +4195,7 @@ impl App {
     /// guessing a column that would frequently be wrong once any Markdown
     /// syntax on the line had been stripped or a table reformatted it.
     fn enter_edit_at_preview_row(&mut self, row: usize) {
-        let Some(target_line) = self.note_preview_source_line(row) else {
+        let Some(target_line) = self.note_preview_edit_line(row) else {
             return;
         };
         self.start_edit_inline();
@@ -5313,6 +5313,12 @@ impl App {
             if let Some(normalized) = shiki_core::tasks::normalize_due_tags(&note.body, today) {
                 note.body = normalized;
             }
+            // Bible quotes are recomputed at save time too — or, if a
+            // reference still has to be looked up, written in shortly after
+            // (`App::poll_bible_channel`).
+            if let Some(quoted) = self.bible_expand_for_save(&note.body, &note.path) {
+                note.body = quoted;
+            }
             let crypto = self.selected_notebook().and_then(|nb| nb.crypto.clone());
             let _ = note.save_with_crypto(crypto.as_ref());
             self.note_changed(&note.frontmatter.notebook);
@@ -5368,6 +5374,8 @@ impl App {
             Action::PublishNotebook => self.publish_notebook(),
             Action::ExportNotebook => self.start_export_notebook(),
             Action::ToggleZenMode => self.toggle_zen_mode(),
+            Action::ToggleStudyNotes => self.toggle_bible_study_notes(),
+            Action::CycleBibleLanguage => self.cycle_bible_language(),
 
             Action::NewNotebook => {
                 self.notebook_source_index = 0;

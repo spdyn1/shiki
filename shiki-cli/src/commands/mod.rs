@@ -1,4 +1,5 @@
 pub mod agent;
+pub mod bible;
 pub mod capture;
 pub mod config;
 pub mod daemon;

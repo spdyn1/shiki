@@ -38,6 +38,10 @@ pub enum Action {
     /// Forces the full-screen single-panel layout regardless of terminal
     /// size, hiding NOTEBOOKS/NOTES for distraction-free writing.
     ToggleZenMode,
+    /// Shows/hides the Bible study notes under quoted verses in PREVIEW.
+    ToggleStudyNotes,
+    /// Switches the Bible quotes to the next of `[bible] languages`.
+    CycleBibleLanguage,
     // Notebooks-focus
     NewNotebook,
     RenameNotebook,
@@ -174,6 +178,16 @@ impl KeyMaps {
         bind(&mut global, &cfg.global.publish, Action::PublishNotebook);
         bind(&mut global, &cfg.global.export, Action::ExportNotebook);
         bind(&mut global, &cfg.global.zen_mode, Action::ToggleZenMode);
+        bind(
+            &mut global,
+            &cfg.global.bible_study_notes,
+            Action::ToggleStudyNotes,
+        );
+        bind(
+            &mut global,
+            &cfg.global.bible_language,
+            Action::CycleBibleLanguage,
+        );
 
         let mut notebooks = HashMap::new();
         bind(&mut notebooks, &cfg.notebooks.new, Action::NewNotebook);
@@ -448,6 +462,8 @@ pub fn action_label(action: Action) -> &'static str {
         Action::PublishNotebook => "publish notebook to PDF",
         Action::ExportNotebook => "export notebook to HTML/Markdown",
         Action::ToggleZenMode => "zen mode (full-screen, hide side panels)",
+        Action::ToggleStudyNotes => "Bible study notes under quoted verses",
+        Action::CycleBibleLanguage => "Bible language (next of [bible] languages)",
         Action::ShowOutline => "outline (jump to a heading)",
         Action::EditMetadata => "metadata (tags / frontmatter fields)",
     }
@@ -489,6 +505,8 @@ pub fn action_icon(action: Action) -> crate::icons::Icon {
         Action::PublishNotebook => crate::icons::PDF,
         Action::ExportNotebook => crate::icons::NOTE,
         Action::ToggleZenMode => crate::icons::EXPAND,
+        Action::ToggleStudyNotes => crate::icons::NOTE,
+        Action::CycleBibleLanguage => crate::icons::NOTE,
         Action::ShowOutline => crate::icons::TREE,
         Action::EditMetadata => crate::icons::TAG,
     }

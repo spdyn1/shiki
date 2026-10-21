@@ -436,6 +436,23 @@ enum Commands {
         #[arg(long)]
         json: bool,
     },
+    /// Looks up Bible references (e.g. `shiki bible "Jn 3:16, 17"`) and
+    /// prints the verse quotes `[bible]` inserts under them in notes — from
+    /// the local NWT EPUB (downloaded from jw.org on first use) or jw.org
+    Bible {
+        /// Text containing one or more references.
+        #[arg(default_value = "")]
+        text: String,
+        /// Ask jw.org even when `[bible] source = "local"`.
+        #[arg(long)]
+        online: bool,
+        /// (Re)download the NWT EPUB from jw.org.
+        #[arg(long)]
+        download: bool,
+        /// Language of the text instead of `[bible] language` (`en`, `es`…).
+        #[arg(long)]
+        lang: Option<String>,
+    },
     /// Shows the path to the config file
     Config,
     /// Checks the environment (config, data dir, git, editor, terminal, notebooks)
@@ -1137,6 +1154,12 @@ fn main() -> Result<()> {
         Some(Commands::Index { notebook, json }) => {
             commands::index::run(&ctx.store, &ctx.config, notebook.as_deref(), json)
         }
+        Some(Commands::Bible {
+            text,
+            online,
+            download,
+            lang,
+        }) => commands::bible::run(&ctx.config, &text, online, download, lang.as_deref()),
         Some(Commands::Config) => commands::config::run(),
         Some(Commands::Doctor) => unreachable!("handled before Context::load() above"),
         Some(Commands::Daemon) => commands::daemon::run(&ctx.store, &ctx.config),

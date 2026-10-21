@@ -724,6 +724,8 @@ pub struct App {
         std::sync::mpsc::Sender<(std::path::PathBuf, usize, Option<Vec<Line<'static>>>)>,
     pub(crate) image_art_rx:
         std::sync::mpsc::Receiver<(std::path::PathBuf, usize, Option<Vec<Line<'static>>>)>,
+    /// `[bible]` verse quoting (`crate::bible`) — `None` while it's off.
+    pub(crate) bible: Option<crate::bible::BibleState>,
     pub show_update: bool,
     pub update_state: Option<UpdateState>,
     /// Set while a background thread is checking/installing, so `run()`'s
@@ -942,6 +944,7 @@ impl App {
             .unwrap_or(0);
         let (capture_tx, capture_rx) = std::sync::mpsc::channel();
         let (image_art_tx, image_art_rx) = std::sync::mpsc::channel();
+        let bible = crate::bible::BibleState::from_config(&config);
 
         let mut app = Self {
             config,
@@ -1128,6 +1131,7 @@ impl App {
             image_art_inflight: std::collections::HashSet::new(),
             image_art_tx,
             image_art_rx,
+            bible,
             show_update: false,
             update_state: None,
             update_rx: None,
@@ -1901,6 +1905,7 @@ impl App {
         self.keymaps = KeyMaps::from_config(&new_config.keybindings);
         self.favorite_editor = shiki_core::editor::detect_favorite_editor();
         self.config = new_config;
+        self.reset_bible();
         // Both caches key on the theme's colors too, so a reload that
         // doesn't actually change the theme would still hit correctly even
         // without this — but that's an accident of the cache key, not a
@@ -2097,7 +2102,10 @@ impl App {
             return;
         }
         let folded = self.details_folded_for(&path);
-        let body = note.body.clone();
+        let (body, body_lines) = match self.bible_preview_body(&note.body) {
+            Some((body, origins)) => (body, Some(origins)),
+            None => (note.body.clone(), None),
+        };
         let dark = crate::render::is_dark_color(colors[4]);
         let palette = crate::syntax::SyntaxPalette {
             fg: colors[0],
@@ -2157,7 +2165,7 @@ impl App {
             sources.extend(std::iter::repeat_n(Some(src), rows.len()));
             lines.extend(rows);
         }
-        self.note_preview_cache = Some(cache::NotePreviewCache::new(
+        let mut preview = cache::NotePreviewCache::new(
             path,
             colors,
             width,
@@ -2165,7 +2173,9 @@ impl App {
             lines,
             sources,
             summary_blocks,
-        ));
+        );
+        preview.body_lines = body_lines;
+        self.note_preview_cache = Some(preview);
     }
 
     /// Spawns a background `chafa` render for whichever of `body`'s images
@@ -2314,6 +2324,17 @@ impl App {
         self.note_preview_cache
             .as_ref()
             .and_then(|cache| cache.sources.get(row).copied().flatten())
+    }
+
+    /// The *note* line behind a rendered PREVIEW row — same as
+    /// `note_preview_source_line` unless PREVIEW shows lines that aren't
+    /// in the note (`[bible]`), which map to the line they were added for.
+    pub(crate) fn note_preview_edit_line(&self, row: usize) -> Option<usize> {
+        let line = self.note_preview_source_line(row)?;
+        match self.note_preview_cache.as_ref()?.body_lines.as_ref() {
+            Some(map) => map.get(line).copied(),
+            None => Some(line),
+        }
     }
 
     /// The cached revision count for whichever note is currently selected,
@@ -2663,6 +2684,7 @@ pub fn run<B: Backend<Error = io::Error>>(
         app.poll_sync_channel();
         app.poll_history_count_channel();
         app.poll_image_art_channel();
+        app.poll_bible_channel();
         app.poll_capture_channel();
         app.poll_gh_preflight_channel();
         if app.sync_in_flight.is_some() {
@@ -2698,6 +2720,7 @@ pub fn run<B: Backend<Error = io::Error>>(
                         let _ = std::fs::write(&path, normalized);
                     }
                 }
+                app.bible_apply_to_file(&path);
                 app.refresh_notes_preserve_selection();
                 if let Some(notebook_name) = notebook_name {
                     app.note_changed(&notebook_name);

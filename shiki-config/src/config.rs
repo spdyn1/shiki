@@ -497,6 +497,16 @@ pub struct GlobalKeybindings {
     /// `logs`/`toggle_favorite_editor`.
     #[serde(default = "default_zen_mode_key")]
     pub zen_mode: String,
+    /// Shows/hides the Bible study notes under quoted verses in PREVIEW
+    /// (`[bible] study_notes`). Field-level default for the same
+    /// backward-compatibility reason as `logs`/`toggle_favorite_editor`.
+    #[serde(default = "default_bible_study_notes_key")]
+    pub bible_study_notes: String,
+    /// Switches the Bible quotes to the next of `[bible] languages`.
+    /// Field-level default for the same backward-compatibility reason as
+    /// `logs`/`toggle_favorite_editor`.
+    #[serde(default = "default_bible_language_key")]
+    pub bible_language: String,
 }
 
 impl Default for GlobalKeybindings {
@@ -518,8 +528,18 @@ impl Default for GlobalKeybindings {
             publish: default_publish_key(),
             export: default_export_key(),
             zen_mode: default_zen_mode_key(),
+            bible_study_notes: default_bible_study_notes_key(),
+            bible_language: default_bible_language_key(),
         }
     }
+}
+
+fn default_bible_language_key() -> String {
+    "v".into()
+}
+
+fn default_bible_study_notes_key() -> String {
+    "n".into()
 }
 
 fn default_zen_mode_key() -> String {
@@ -1397,6 +1417,96 @@ fn default_pdf_theme() -> String {
     "default".into()
 }
 
+/// `[bible]` — verse text quoted under Bible references in notes
+/// (`shiki_core::bible`). Off by default; plain strings rather than enums
+/// for `mode`/`source`, same as `default_note_sort`, so an unknown value
+/// just falls back to the default instead of failing the whole config.
+/// The book names/abbreviations live in their own file, `bible-livres.toml`
+/// next to `config.toml` (`Config::default_bible_books_path`).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BibleConfig {
+    #[serde(default)]
+    pub enabled: bool,
+    /// `"insert"`: on save (inline `i` or external `E`), the quotes are
+    /// written into the note itself, so they live in git and exports too.
+    /// `"preview"`: the note file is never touched; PREVIEW alone shows the
+    /// quotes under each reference.
+    #[serde(default = "default_bible_mode")]
+    pub mode: String,
+    /// `"local"`: the NWT EPUB from jw.org (downloaded once, see `epub_path`),
+    /// falling back to jw.org for anything it lacks. `"online"`: jw.org only.
+    #[serde(default = "default_bible_source")]
+    pub source: String,
+    /// jw.org publication the links (and online lookups) point at:
+    /// `"nwtsty"` (study edition) or `"nwt"`.
+    #[serde(default = "default_bible_edition")]
+    pub edition: String,
+    /// Language of the quoted text, its links and its study notes: an ISO
+    /// code for the common languages (`fr`, `en`, `es`, `de`, `pt`…) or any
+    /// jw.org language code (`CHS`, `TPO`…). References in notes are still
+    /// recognized through `bible-livres.toml`, whatever this is.
+    #[serde(default = "default_bible_language")]
+    pub language: String,
+    /// What leader+`v` cycles `language` through, live.
+    #[serde(default = "default_bible_languages")]
+    pub languages: Vec<String>,
+    /// Shows the study edition's notes under each quote in PREVIEW (a
+    /// collapsible block; never written into the note). Toggled live with
+    /// leader+`n` (`keybindings.global.bible_study_notes`).
+    #[serde(default)]
+    pub study_notes: bool,
+    /// Path of the EPUB, `{lang}` standing for the jw.org language code.
+    /// Empty (the default) means `{cache_dir}/bible/nwt_{lang}.epub` — see
+    /// `Config::default_bible_dir`.
+    #[serde(default)]
+    pub epub_path: String,
+}
+
+impl Default for BibleConfig {
+    fn default() -> Self {
+        Self {
+            enabled: false,
+            mode: default_bible_mode(),
+            source: default_bible_source(),
+            edition: default_bible_edition(),
+            language: default_bible_language(),
+            languages: default_bible_languages(),
+            study_notes: false,
+            epub_path: String::new(),
+        }
+    }
+}
+
+impl BibleConfig {
+    pub fn preview_only(&self) -> bool {
+        self.mode == "preview"
+    }
+
+    pub fn online_only(&self) -> bool {
+        self.source == "online"
+    }
+}
+
+fn default_bible_mode() -> String {
+    "insert".into()
+}
+
+fn default_bible_source() -> String {
+    "local".into()
+}
+
+fn default_bible_edition() -> String {
+    "nwtsty".into()
+}
+
+fn default_bible_language() -> String {
+    "fr".into()
+}
+
+fn default_bible_languages() -> Vec<String> {
+    vec!["fr".into(), "en".into()]
+}
+
 /// Per-notebook override of the `[git]` sync policy — a notebook connected
 /// to a private work repo might want `auto_push`, while a scratch notebook
 /// with no remote at all shouldn't be forced into the same policy. Any
@@ -1528,6 +1638,8 @@ pub struct Config {
     pub editor: EditorConfig,
     #[serde(default)]
     pub export: ExportConfig,
+    #[serde(default)]
+    pub bible: BibleConfig,
     /// Per-notebook overrides of `[git]`, keyed by notebook name — e.g.
     /// `[notebooks.work]` with `auto_push = true`. See `NotebookGitOverride`.
     #[serde(default)]
@@ -1645,6 +1757,24 @@ impl Config {
 
     pub fn default_data_dir() -> Result<PathBuf> {
         data_dir()
+    }
+
+    /// Where `[bible]` keeps the downloaded EPUB and the online verse
+    /// cache: `~/.cache/shiki/bible` on Linux (`$XDG_CACHE_HOME` honored),
+    /// never the data dir, whose top level is the notebooks themselves.
+    pub fn default_bible_dir() -> Result<PathBuf> {
+        Ok(resolve_dir(
+            xdg_home("XDG_CACHE_HOME"),
+            project_dirs()?.cache_dir().to_path_buf(),
+        )
+        .join("bible"))
+    }
+
+    /// The editable list of Bible books and abbreviations `[bible]`
+    /// recognizes (`shiki_core::bible::Books`) — written with the default
+    /// list the first time it's needed.
+    pub fn default_bible_books_path() -> Result<PathBuf> {
+        Ok(config_dir()?.join("bible-livres.toml"))
     }
 
     pub fn default_templates_dir() -> Result<PathBuf> {
